@@ -284,10 +284,12 @@ ${terakhirUpdate}
 
  }catch(err){
 
-  hasil.innerHTML =
-  "<div class='card'>❌ Gagal memuat data produk</div>";
+ console.error(err);
 
- }
+ hasil.innerHTML =
+ "<div class='card'>❌ " + err + "</div>";
+
+}
 
 }
 
