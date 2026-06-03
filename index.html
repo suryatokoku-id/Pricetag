@@ -6,7 +6,7 @@
 <title>Cek Harga Produk Suryatokoku</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-:root{--primary:#e30613;--bg:#f5f5f5;}
+:root{--primary:#ff4fa3;--bg:#f5f5f5;}
 *{box-sizing:border-box;font-family:Arial,sans-serif}
 body{margin:0;background:var(--bg)}
 .container{max-width:700px;margin:auto;padding:15px}
@@ -26,19 +26,33 @@ button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor
 <div class="container">
 <div class="header">
 <h2>CEK HARGA PRODUK</h2>
-<div>Suryatokoku</div>
+
+<div style="margin-top:15px">
+<button
+onclick="window.location.href='request.html'"
+style="
+background:white;
+color:#ff4fa3;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+width:auto;
+">
+PERMINTAAN PRICE TAG
+</button>
+</div>
+
 </div>
 
 <div class="card">
-<label>Nama Karyawan</label>
-<input id="nama" placeholder="Masukkan nama">
 
 <label style="margin-top:10px;display:block">Barcode / Nama Produk</label>
 <input id="keyword" placeholder="Scan barcode atau ketik nama produk">
 
 <div class="row">
 <button class="scan" onclick="startScanner()">SCAN</button>
-<button class="cari" onclick="cariProduk()">CARI</button>
 </div>
 </div>
 
@@ -53,10 +67,10 @@ let currentProducts=[];
 let currentProduct=null;
 let allProducts=[];
  
-const nama=document.getElementById("nama");
-nama.value=localStorage.getItem("namaKaryawan")||"";
-nama.addEventListener("change",()=>localStorage.setItem("namaKaryawan",nama.value));
-
+document
+.getElementById("keyword")
+.addEventListener("input",cariProduk);
+ 
 window.onload = loadData;
 
 function cariProduk(){
@@ -68,8 +82,11 @@ function cariProduk(){
  .toLowerCase();
 
  if(!keyword){
-  return;
- }
+
+ document.getElementById("hasil").innerHTML="";
+ return;
+
+}
 
  currentProducts=
  allProducts.filter(item=>
@@ -97,79 +114,65 @@ function cariProduk(){
 }
 
 function tampilkanProduk(){
+
  const hasil=document.getElementById("hasil");
 
  if(currentProducts.length===0){
-  hasil.innerHTML="<div class='card'>Produk tidak ditemukan</div>";
+
+  hasil.innerHTML=
+  "<div class='card'>Produk tidak ditemukan</div>";
+
   return;
  }
 
- if(currentProducts.length===1){
-  renderDetail(currentProducts[0]);
-  return;
- }
+ let html="";
 
- let html="<div class='card'><h3>Pilih Produk</h3>";
+ currentProducts
+ .slice(0,20)
+ .forEach(item=>{
 
- currentProducts.forEach((p,i)=>{
-  html+=`<p><label><input type="radio" name="produk" value="${i}"> ${p.nama}</label></p>`;
- });
+ html+=`
 
- html+='<button class="cari" onclick="pilihProduk()">PILIH</button></div>';
- hasil.innerHTML=html;
-}
-
-function pilihProduk(){
- const pilih=document.querySelector("input[name='produk']:checked");
- if(!pilih){alert("Pilih produk");return;}
- renderDetail(currentProducts[pilih.value]);
-}
-
-function renderDetail(item){
- currentProduct=item;
-
- document.getElementById("hasil").innerHTML=`
  <div class="card">
+
  <h3>${item.nama}</h3>
- <p>Kode Item : <b>${item.kode}</b></p>
 
- <div class="pricebox">Non Member<div class="price">Rp ${rupiah(item.non)}</div></div>
- <div class="pricebox">Member Ecer<div class="price">Rp ${rupiah(item.ecer)}</div></div>
- <div class="pricebox">Member Grosir<div class="price">Rp ${rupiah(item.grosir)}</div></div>
+ <p>
+ Kode Item :
+ <b>${item.kode}</b>
+ </p>
 
- <button id="btnRequest" class="request" onclick="requestPriceTag()">PERMINTAAN PRICE TAG</button>
- <div id="notif"></div>
- </div>`;
-}
+ <div class="pricebox">
+ Non Member
+ <div class="price">
+ Rp ${rupiah(item.non)}
+ </div>
+ </div>
 
-async function requestPriceTag(){
- const namaPeminta=document.getElementById("nama").value.trim();
- if(!namaPeminta){alert("Isi nama terlebih dahulu");return;}
+ <div class="pricebox">
+ Member Ecer
+ <div class="price">
+ Rp ${rupiah(item.ecer)}
+ </div>
+ </div>
 
- const btn=document.getElementById("btnRequest");
- btn.disabled=true;
- btn.innerText="MENGIRIM...";
+ <div class="pricebox">
+ Member Grosir
+ <div class="price">
+ Rp ${rupiah(item.grosir)}
+ </div>
+ </div>
 
- const res=await fetch(API_URL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-   action:"request",
-   namaPeminta:namaPeminta,
-   kodeItem:currentProduct.kode,
-   namaProduk:currentProduct.nama
-  })
+ </div>
+
+ `;
+
  });
 
- const json=await res.json();
+ hasil.innerHTML=html;
 
- if(json.status){
-  document.getElementById("notif").innerHTML="<div class='success'>✅ Permintaan Price Tag berhasil dikirim</div>";
- }
-
- btn.disabled=false;
- btn.innerText="PERMINTAAN PRICE TAG";
 }
+
 
 function rupiah(x){
  return Number(x||0).toLocaleString("id-ID");
