@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Cek Harga Produk</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Cek Harga Produk</h2>
+
+<input
+id="nama"
+placeholder="Nama Karyawan">
+
+<div class="search-box">
+
+<input
+id="keyword"
+placeholder="Scan barcode atau ketik nama produk">
+
+<button onclick="startScanner()">
+Scan
+</button>
+
+<button onclick="cariProduk()">
+Cari
+</button>
+
+</div>
+
+<div id="reader"></div>
+
+<div id="hasil"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
