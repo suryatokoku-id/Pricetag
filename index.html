@@ -42,6 +42,15 @@ width:auto;
 ">
 PERMINTAAN PRICE TAG
 </button>
+
+<button
+class="btn"
+onclick="refreshData()">
+
+🔄 REFRESH DATA
+
+</button>
+ 
 </div>
 
 </div>
@@ -62,7 +71,7 @@ PERMINTAAN PRICE TAG
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycby0A2Wtap_JM4nrGLdtSSJ21dKx7rhpURKDhwQQKVyZ-I97A9xiNwwkHHW46USFYhnK/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbxbkN6Wqvy_wpZ5bp34p5Qi97L2droitdu5m6n4i9PGqkODcFAQcHZLQBC0f33_heeN/exec";
 let currentProducts=[];
 let currentProduct=null;
 let allProducts=[];
@@ -180,37 +189,103 @@ function rupiah(x){
 
 async function loadData(){
 
- document.getElementById("hasil").innerHTML=
+ const CACHE_KEY = "masterProduk";
+ const CACHE_TIME_KEY = "masterProdukTime";
+
+ const cacheData =
+ localStorage.getItem(CACHE_KEY);
+
+ const cacheTime =
+ localStorage.getItem(CACHE_TIME_KEY);
+
+ const enamJam =
+ 6 * 60 * 60 * 1000;
+
+ // Jika cache masih berlaku
+ if(
+  cacheData &&
+  cacheTime &&
+  (Date.now() - Number(cacheTime)) < enamJam
+ ){
+
+  allProducts =
+  JSON.parse(cacheData);
+
+  hasil.innerHTML =
+  `<div class='card'>
+   ⚡ Data dari cache
+   (${allProducts.length.toLocaleString("id-ID")} produk)
+  </div>`;
+
+  setTimeout(()=>{
+   hasil.innerHTML="";
+  },1000);
+
+  return;
+
+ }
+
+ // Jika cache tidak ada / sudah lewat 6 jam
+
+ hasil.innerHTML =
  "<div class='card'>⏳ Memuat data produk...</div>";
 
  try{
 
-  const res=await fetch(
+  const res =
+  await fetch(
    API_URL + "?action=load"
   );
 
-  const json=await res.json();
+  const json =
+  await res.json();
 
-  allProducts=json.data||[];
+  allProducts =
+  json.data || [];
 
-  document.getElementById("hasil").innerHTML=
+  // Simpan cache
+  localStorage.setItem(
+   CACHE_KEY,
+   JSON.stringify(allProducts)
+  );
+
+  localStorage.setItem(
+   CACHE_TIME_KEY,
+   Date.now()
+  );
+
+  hasil.innerHTML =
   `<div class='card'>
    ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
   </div>`;
 
   setTimeout(()=>{
-   document.getElementById("hasil").innerHTML="";
-  },2000);
+   hasil.innerHTML="";
+  },1500);
 
  }catch(err){
 
-  document.getElementById("hasil").innerHTML=
+  hasil.innerHTML =
   "<div class='card'>❌ Gagal memuat data produk</div>";
 
  }
 
 }
 
+ function refreshData(){
+
+ localStorage.removeItem(
+  "masterProduk"
+ );
+
+ localStorage.removeItem(
+  "masterProdukTime"
+ );
+
+ loadData();
+
+}
+ 
 function startScanner(){
  document.getElementById("reader").innerHTML="";
  const qr=new Html5Qrcode("reader");
