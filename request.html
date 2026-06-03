@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Permintaan Price Tag</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+:root{
+  --primary:#ff4fa3;
+  --bg:#f5f5f5;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+}
+
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:15px;
+}
+
+.header{
+  background:var(--primary);
+  color:white;
+  text-align:center;
+  padding:20px;
+  border-radius:12px;
+}
+
+.card{
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+input{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin-top:5px;
+}
+
+button{
+  border:none;
+  border-radius:8px;
+  padding:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.btn-back{
+  background:white;
+  color:var(--primary);
+  margin-top:10px;
+}
+
+.btn-scan{
+  width:100%;
+  margin-top:10px;
+  background:#444;
+  color:white;
+}
+
+.btn-request{
+  width:100%;
+  margin-top:10px;
+  background:var(--primary);
+  color:white;
+}
+
+.success{
+  background:#d4edda;
+  color:#155724;
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<h2>PERMINTAAN PRICE TAG</h2>
+
+<button
+class="btn-back"
+onclick="location.href='index.html'">
+
+KEMBALI
+
+</button>
+
+</div>
+
+<div class="card">
+
+<label>Nama Karyawan</label>
+
+<input
+id="nama"
+placeholder="Masukkan nama">
+
+<br><br>
+
+<label>Barcode / Nama Produk</label>
+
+<input
+id="keyword"
+placeholder="Scan barcode atau ketik nama produk">
+
+<button
+class="btn-scan"
+onclick="startScanner()">
+
+SCAN BARCODE
+
+</button>
+
+</div>
+
+<div id="reader"></div>
+
+<div id="hasil"></div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycby0A2Wtap_JM4nrGLdtSSJ21dKx7rhpURKDhwQQKVyZ-I97A9xiNwwkHHW46USFYhnK/exec";
+
+let allProducts = [];
+let currentResults = [];
+
+const namaInput =
+document.getElementById("nama");
+
+namaInput.value =
+localStorage.getItem("namaKaryawan") || "";
+
+namaInput.addEventListener("change",()=>{
+
+ localStorage.setItem(
+  "namaKaryawan",
+  namaInput.value
+ );
+
+});
+
+window.onload = loadData;
+
+document
+.getElementById("keyword")
+.addEventListener("input",cariProduk);
+
+async function loadData(){
+
+ hasil.innerHTML =
+ "<div class='card'>⏳ Memuat data produk...</div>";
+
+ try{
+
+  const res =
+  await fetch(API_URL + "?action=load");
+
+  const json =
+  await res.json();
+
+  allProducts =
+  json.data || [];
+
+  hasil.innerHTML =
+  `<div class="card">
+   ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
+  </div>`;
+
+  setTimeout(()=>{
+   hasil.innerHTML="";
+  },1500);
+
+ }catch(err){
+
+  hasil.innerHTML =
+  "<div class='card'>❌ Gagal memuat data</div>";
+
+ }
+
+}
+
+function cariProduk(){
+
+ const keyword =
+ document
+ .getElementById("keyword")
+ .value
+ .trim()
+ .toLowerCase();
+
+ if(!keyword){
+
+  hasil.innerHTML="";
+  return;
+
+ }
+
+ currentResults =
+ allProducts
+ .filter(item=>
+
+  String(item.barcode || "")
+  .toLowerCase()
+  .includes(keyword)
+
+  ||
+
+  String(item.kode || "")
+  .toLowerCase()
+  .includes(keyword)
+
+  ||
+
+  String(item.nama || "")
+  .toLowerCase()
+  .includes(keyword)
+
+ )
+ .slice(0,20);
+
+ tampilkanHasil();
+
+}
+
+function tampilkanHasil(){
+
+ if(currentResults.length===0){
+
+  hasil.innerHTML =
+  "<div class='card'>Produk tidak ditemukan</div>";
+
+  return;
+
+ }
+
+ let html="";
+
+ currentResults.forEach((item,index)=>{
+
+ html += `
+
+ <div class="card">
+
+ <h3>${item.nama}</h3>
+
+ <p>
+ Kode Item :
+ <b>${item.kode}</b>
+ </p>
+
+ <button
+ class="btn-request"
+ onclick="kirimRequest(${index})">
+
+ KIRIM PERMINTAAN
+
+ </button>
+
+ </div>
+
+ `;
+
+ });
+
+ hasil.innerHTML = html;
+
+}
+
+async function kirimRequest(index){
+
+ const namaPeminta =
+ document
+ .getElementById("nama")
+ .value
+ .trim();
+
+ if(!namaPeminta){
+
+  alert(
+   "Isi nama karyawan terlebih dahulu"
+  );
+
+  return;
+ }
+
+ const item =
+ currentResults[index];
+
+ try{
+
+  const res =
+  await fetch(API_URL,{
+
+   method:"POST",
+
+   headers:{
+    "Content-Type":"application/json"
+   },
+
+   body:JSON.stringify({
+
+    action:"request",
+
+    namaPeminta:namaPeminta,
+
+    kodeItem:item.kode,
+
+    namaProduk:item.nama
+
+   })
+
+  });
+
+  const json =
+  await res.json();
+
+  if(json.status){
+
+   alert(
+    "Permintaan Price Tag berhasil dikirim"
+   );
+
+  }
+
+ }catch(err){
+
+  alert(
+   "Gagal mengirim permintaan"
+  );
+
+ }
+
+}
+
+function startScanner(){
+
+ document
+ .getElementById("reader")
+ .innerHTML = "";
+
+ const qr =
+ new Html5Qrcode("reader");
+
+ qr.start(
+
+  { facingMode:"environment" },
+
+  {
+   fps:10,
+   qrbox:250
+  },
+
+  (decoded)=>{
+
+   document
+   .getElementById("keyword")
+   .value = decoded;
+
+   qr.stop();
+
+   document
+   .getElementById("reader")
+   .innerHTML = "";
+
+   cariProduk();
+
+  }
+
+ );
+
+}
+
+</script>
+
+</body>
+</html>
