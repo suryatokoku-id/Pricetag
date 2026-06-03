@@ -79,7 +79,7 @@ margin-left:10px;
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbwxSUDdSAx-NcB4lUZMAyHP7xraOmCK60uDi5fXEC1HhBVxszeLIKg3qN_GZFrIFoOX/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbw0g2jFI8AD3UfthUcqubE7wCaOdPhyeuJ1tt5J-rrlODUKy2hplh_3vVnxfI3Jtt3p/exec";
 let currentProducts=[];
 let currentProduct=null;
 let allProducts=[];
@@ -201,12 +201,6 @@ async function loadData(){
  const CACHE_KEY = "masterProduk";
  const CACHE_TIME_KEY = "masterProdukTime";
 
- const cacheData =
- localStorage.getItem(CACHE_KEY);
-
- const cacheTime =
- localStorage.getItem(CACHE_TIME_KEY);
-
  const enamJam =
  6 * 60 * 60 * 1000;
 
@@ -263,16 +257,6 @@ ${terakhirUpdate}
   json.data || [];
 
   // Simpan cache
-  localStorage.setItem(
-   CACHE_KEY,
-   JSON.stringify(allProducts)
-  );
-
-  localStorage.setItem(
-   CACHE_TIME_KEY,
-   Date.now()
-  );
-
   hasil.innerHTML =
   `<div class='card'>
    ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
