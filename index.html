@@ -48,23 +48,52 @@ button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbwujnL2JudLZLtEzThe6IneuagFPs-wrqrrEFTipM7oQpfrQKUA423xTTMSvxtfOF_U/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbwHbOPkmABDIpqTRyUkyKyELUsTNM7COFp23dNCdg2oI_bOvkc__hMngQ4F6ghMm59j/exec";
 let currentProducts=[];
 let currentProduct=null;
-
+let allProducts=[];
+ 
 const nama=document.getElementById("nama");
 nama.value=localStorage.getItem("namaKaryawan")||"";
 nama.addEventListener("change",()=>localStorage.setItem("namaKaryawan",nama.value));
 
-async function cariProduk(){
- const keyword=document.getElementById("keyword").value.trim();
- if(!keyword){alert("Masukkan barcode atau nama produk");return;}
- document.getElementById("hasil").innerHTML="<div class='card'>Mencari...</div>";
+window.onload = loadData;
 
- const res=await fetch(API_URL+"?action=search&keyword="+encodeURIComponent(keyword));
- const json=await res.json();
- currentProducts=json.data||[];
+function cariProduk(){
+
+ const keyword=
+ document.getElementById("keyword")
+ .value
+ .trim()
+ .toLowerCase();
+
+ if(!keyword){
+  return;
+ }
+
+ currentProducts=
+ allProducts.filter(item=>
+
+  String(item.barcode||"")
+  .toLowerCase()
+  .includes(keyword)
+
+  ||
+
+  String(item.kode||"")
+  .toLowerCase()
+  .includes(keyword)
+
+  ||
+
+  String(item.nama||"")
+  .toLowerCase()
+  .includes(keyword)
+
+ );
+
  tampilkanProduk();
+
 }
 
 function tampilkanProduk(){
@@ -144,6 +173,39 @@ async function requestPriceTag(){
 
 function rupiah(x){
  return Number(x||0).toLocaleString("id-ID");
+}
+
+async function loadData(){
+
+ document.getElementById("hasil").innerHTML=
+ "<div class='card'>⏳ Memuat data produk...</div>";
+
+ try{
+
+  const res=await fetch(
+   API_URL + "?action=load"
+  );
+
+  const json=await res.json();
+
+  allProducts=json.data||[];
+
+  document.getElementById("hasil").innerHTML=
+  `<div class='card'>
+   ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
+  </div>`;
+
+  setTimeout(()=>{
+   document.getElementById("hasil").innerHTML="";
+  },2000);
+
+ }catch(err){
+
+  document.getElementById("hasil").innerHTML=
+  "<div class='card'>❌ Gagal memuat data produk</div>";
+
+ }
+
 }
 
 function startScanner(){
