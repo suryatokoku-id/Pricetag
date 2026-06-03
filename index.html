@@ -44,11 +44,19 @@ PERMINTAAN PRICE TAG
 </button>
 
 <button
-class="btn"
-onclick="refreshData()">
-
+onclick="refreshData()"
+style="
+background:white;
+color:#ff4fa3;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+width:auto;
+margin-left:10px;
+">
 🔄 REFRESH DATA
-
 </button>
  
 </div>
@@ -75,6 +83,7 @@ const API_URL="https://script.google.com/macros/s/AKfycbxbkN6Wqvy_wpZ5bp34p5Qi97
 let currentProducts=[];
 let currentProduct=null;
 let allProducts=[];
+let qr = null;
  
 document
 .getElementById("keyword")
@@ -201,6 +210,12 @@ async function loadData(){
  const enamJam =
  6 * 60 * 60 * 1000;
 
+ const terakhirUpdate =
+cacheTime
+? new Date(Number(cacheTime))
+   .toLocaleString("id-ID")
+: "-";
+
  // Jika cache masih berlaku
  if(
   cacheData &&
@@ -212,10 +227,14 @@ async function loadData(){
   JSON.parse(cacheData);
 
   hasil.innerHTML =
-  `<div class='card'>
-   ⚡ Data dari cache
-   (${allProducts.length.toLocaleString("id-ID")} produk)
-  </div>`;
+`<div class='card'>
+⚡ Data dari cache
+<br>
+${allProducts.length.toLocaleString("id-ID")} produk
+<br>
+Update:
+${terakhirUpdate}
+</div>`;
 
   setTimeout(()=>{
    hasil.innerHTML="";
@@ -272,7 +291,10 @@ async function loadData(){
 
 }
 
- function refreshData(){
+ async function refreshData(){
+
+ hasil.innerHTML =
+ "<div class='card'>🔄 Mengambil data terbaru...</div>";
 
  localStorage.removeItem(
   "masterProduk"
@@ -282,24 +304,42 @@ async function loadData(){
   "masterProdukTime"
  );
 
- loadData();
+ await loadData();
 
 }
  
 function startScanner(){
+
+ if(qr){
+  return;
+ }
+
  document.getElementById("reader").innerHTML="";
- const qr=new Html5Qrcode("reader");
+
+ qr =
+ new Html5Qrcode("reader");
 
  qr.start(
   {facingMode:"environment"},
   {fps:10,qrbox:250},
   (decoded)=>{
-   document.getElementById("keyword").value=decoded;
-   qr.stop();
-   document.getElementById("reader").innerHTML="";
-   cariProduk();
+
+   document.getElementById("keyword").value =
+   decoded;
+
+   qr.stop().then(()=>{
+
+    qr = null;
+
+    document.getElementById("reader").innerHTML="";
+
+    cariProduk();
+
+   });
+
   }
  );
+
 }
 </script>
 </body>
