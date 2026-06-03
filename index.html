@@ -1,51 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Cek Harga Produk</title>
-
-<link rel="stylesheet" href="style.css">
-
+<title>Cek Harga Produk Suryatokoku</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
-
+<style>
+:root{--primary:#e30613;--bg:#f5f5f5;}
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:var(--bg)}
+.container{max-width:700px;margin:auto;padding:15px}
+.header{background:var(--primary);color:#fff;padding:20px;border-radius:12px;text-align:center}
+.card{background:#fff;padding:15px;border-radius:12px;margin-top:15px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin-top:5px}
+.row{display:flex;gap:10px;margin-top:10px}
+button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+.scan{background:#444;color:#fff}
+.cari,.request{background:var(--primary);color:#fff}
+.price{font-size:22px;font-weight:bold;color:var(--primary)}
+.pricebox{background:#fafafa;padding:10px;border-radius:8px;margin-top:8px}
+.success{background:#d4edda;padding:10px;border-radius:8px;margin-top:10px}
+</style>
 </head>
-
 <body>
-
 <div class="container">
+<div class="header">
+<h2>CEK HARGA PRODUK</h2>
+<div>Suryatokoku</div>
+</div>
 
-<h2>Cek Harga Produk</h2>
+<div class="card">
+<label>Nama Karyawan</label>
+<input id="nama" placeholder="Masukkan nama">
 
-<input
-id="nama"
-placeholder="Nama Karyawan">
+<label style="margin-top:10px;display:block">Barcode / Nama Produk</label>
+<input id="keyword" placeholder="Scan barcode atau ketik nama produk">
 
-<div class="search-box">
-
-<input
-id="keyword"
-placeholder="Scan barcode atau ketik nama produk">
-
-<button onclick="startScanner()">
-Scan
-</button>
-
-<button onclick="cariProduk()">
-Cari
-</button>
-
+<div class="row">
+<button class="scan" onclick="startScanner()">SCAN</button>
+<button class="cari" onclick="cariProduk()">CARI</button>
+</div>
 </div>
 
 <div id="reader"></div>
-
 <div id="hasil"></div>
 
 </div>
 
-<script src="script.js"></script>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbwujnL2JudLZLtEzThe6IneuagFPs-wrqrrEFTipM7oQpfrQKUA423xTTMSvxtfOF_U/exec";
+let currentProducts=[];
+let currentProduct=null;
 
+const nama=document.getElementById("nama");
+nama.value=localStorage.getItem("namaKaryawan")||"";
+nama.addEventListener("change",()=>localStorage.setItem("namaKaryawan",nama.value));
+
+async function cariProduk(){
+ const keyword=document.getElementById("keyword").value.trim();
+ if(!keyword){alert("Masukkan barcode atau nama produk");return;}
+ document.getElementById("hasil").innerHTML="<div class='card'>Mencari...</div>";
+
+ const res=await fetch(API_URL+"?action=search&keyword="+encodeURIComponent(keyword));
+ const json=await res.json();
+ currentProducts=json.data||[];
+ tampilkanProduk();
+}
+
+function tampilkanProduk(){
+ const hasil=document.getElementById("hasil");
+
+ if(currentProducts.length===0){
+  hasil.innerHTML="<div class='card'>Produk tidak ditemukan</div>";
+  return;
+ }
+
+ if(currentProducts.length===1){
+  renderDetail(currentProducts[0]);
+  return;
+ }
+
+ let html="<div class='card'><h3>Pilih Produk</h3>";
+
+ currentProducts.forEach((p,i)=>{
+  html+=`<p><label><input type="radio" name="produk" value="${i}"> ${p.nama}</label></p>`;
+ });
+
+ html+='<button class="cari" onclick="pilihProduk()">PILIH</button></div>';
+ hasil.innerHTML=html;
+}
+
+function pilihProduk(){
+ const pilih=document.querySelector("input[name='produk']:checked");
+ if(!pilih){alert("Pilih produk");return;}
+ renderDetail(currentProducts[pilih.value]);
+}
+
+function renderDetail(item){
+ currentProduct=item;
+
+ document.getElementById("hasil").innerHTML=`
+ <div class="card">
+ <h3>${item.nama}</h3>
+ <p>Kode Item : <b>${item.kode}</b></p>
+
+ <div class="pricebox">Non Member<div class="price">Rp ${rupiah(item.non)}</div></div>
+ <div class="pricebox">Member Ecer<div class="price">Rp ${rupiah(item.ecer)}</div></div>
+ <div class="pricebox">Member Grosir<div class="price">Rp ${rupiah(item.grosir)}</div></div>
+
+ <button id="btnRequest" class="request" onclick="requestPriceTag()">PERMINTAAN PRICE TAG</button>
+ <div id="notif"></div>
+ </div>`;
+}
+
+async function requestPriceTag(){
+ const namaPeminta=document.getElementById("nama").value.trim();
+ if(!namaPeminta){alert("Isi nama terlebih dahulu");return;}
+
+ const btn=document.getElementById("btnRequest");
+ btn.disabled=true;
+ btn.innerText="MENGIRIM...";
+
+ const res=await fetch(API_URL,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+   action:"request",
+   namaPeminta:namaPeminta,
+   kodeItem:currentProduct.kode,
+   namaProduk:currentProduct.nama
+  })
+ });
+
+ const json=await res.json();
+
+ if(json.status){
+  document.getElementById("notif").innerHTML="<div class='success'>✅ Permintaan Price Tag berhasil dikirim</div>";
+ }
+
+ btn.disabled=false;
+ btn.innerText="PERMINTAAN PRICE TAG";
+}
+
+function rupiah(x){
+ return Number(x||0).toLocaleString("id-ID");
+}
+
+function startScanner(){
+ document.getElementById("reader").innerHTML="";
+ const qr=new Html5Qrcode("reader");
+
+ qr.start(
+  {facingMode:"environment"},
+  {fps:10,qrbox:250},
+  (decoded)=>{
+   document.getElementById("keyword").value=decoded;
+   qr.stop();
+   document.getElementById("reader").innerHTML="";
+   cariProduk();
+  }
+ );
+}
+</script>
 </body>
 </html>
