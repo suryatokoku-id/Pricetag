@@ -198,48 +198,6 @@ function rupiah(x){
 
 async function loadData(){
 
- const CACHE_KEY = "masterProduk";
- const CACHE_TIME_KEY = "masterProdukTime";
-
- const enamJam =
- 6 * 60 * 60 * 1000;
-
- const terakhirUpdate =
-cacheTime
-? new Date(Number(cacheTime))
-   .toLocaleString("id-ID")
-: "-";
-
- // Jika cache masih berlaku
- if(
-  cacheData &&
-  cacheTime &&
-  (Date.now() - Number(cacheTime)) < enamJam
- ){
-
-  allProducts =
-  JSON.parse(cacheData);
-
-  hasil.innerHTML =
-`<div class='card'>
-⚡ Data dari cache
-<br>
-${allProducts.length.toLocaleString("id-ID")} produk
-<br>
-Update:
-${terakhirUpdate}
-</div>`;
-
-  setTimeout(()=>{
-   hasil.innerHTML="";
-  },1000);
-
-  return;
-
- }
-
- // Jika cache tidak ada / sudah lewat 6 jam
-
  hasil.innerHTML =
  "<div class='card'>⏳ Memuat data produk...</div>";
 
@@ -256,7 +214,6 @@ ${terakhirUpdate}
   allProducts =
   json.data || [];
 
-  // Simpan cache
   hasil.innerHTML =
   `<div class='card'>
    ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
@@ -268,12 +225,12 @@ ${terakhirUpdate}
 
  }catch(err){
 
- console.error(err);
+  console.error(err);
 
- hasil.innerHTML =
- "<div class='card'>❌ " + err + "</div>";
+  hasil.innerHTML =
+  "<div class='card'>❌ " + err + "</div>";
 
-}
+ }
 
 }
 
@@ -281,14 +238,6 @@ ${terakhirUpdate}
 
  hasil.innerHTML =
  "<div class='card'>🔄 Mengambil data terbaru...</div>";
-
- localStorage.removeItem(
-  "masterProduk"
- );
-
- localStorage.removeItem(
-  "masterProdukTime"
- );
 
  await loadData();
 
