@@ -10,7 +10,14 @@
 *{box-sizing:border-box;font-family:Arial,sans-serif}
 body{margin:0;background:var(--bg)}
 .container{max-width:700px;margin:auto;padding:15px}
-.header{background:var(--primary);color:#fff;padding:20px;border-radius:12px;text-align:center}
+.header{
+  background:white;
+  color:var(--primary);
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
 .card{background:#fff;padding:15px;border-radius:12px;margin-top:15px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 input{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin-top:5px}
 .row{display:flex;gap:10px;margin-top:10px}
@@ -20,48 +27,34 @@ button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor
 .price{font-size:22px;font-weight:bold;color:var(--primary)}
 .pricebox{background:#fafafa;padding:10px;border-radius:8px;margin-top:8px}
 .success{background:#d4edda;padding:10px;border-radius:8px;margin-top:10px}
+ .menu-button{
+  display:block;
+  width:100%;
+  background:var(--primary);
+  color:white;
+  text-align:center;
+  padding:15px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:bold;
+  margin-top:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
 </style>
 </head>
 <body>
 <div class="container">
 <div class="header">
 <h2>CEK HARGA PRODUK</h2>
+</div>
 
-<div style="margin-top:15px">
-<button
-onclick="window.location.href='request.html'"
-style="
-background:white;
-color:#ff4fa3;
-border:none;
-padding:10px 15px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-width:auto;
-">
+<a
+href="request.html"
+class="menu-button">
+
 PERMINTAAN PRICE TAG
-</button>
 
-<button
-onclick="refreshData()"
-style="
-background:white;
-color:#ff4fa3;
-border:none;
-padding:10px 15px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-width:auto;
-margin-left:10px;
-">
-🔄 REFRESH DATA
-</button>
- 
-</div>
-
-</div>
+</a>
 
 <div class="card">
 
@@ -234,14 +227,6 @@ async function loadData(){
 
 }
 
- async function refreshData(){
-
- hasil.innerHTML =
- "<div class='card'>🔄 Mengambil data terbaru...</div>";
-
- await loadData();
-
-}
  
 function startScanner(){
 
