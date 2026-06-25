@@ -395,7 +395,7 @@
                     fetchFreshData(true);
                 } else {
                     // JIKA TIDAK ADA CACHE: Unduh penuh database di awal
-                    splashStatus.innerText = "Mengunduh database perdana (Mohon ditunggu...)";
+                    splashStatus.innerText = "Memuat database awal (Mohon ditunggu...)";
                     await fetchFreshData(false);
                 }
             } catch (err) {
