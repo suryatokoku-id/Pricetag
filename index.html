@@ -40,6 +40,17 @@
             animation: scan 2s linear infinite;
             box-shadow: 0 0 10px #10b981;
         }
+        
+        /* FIX: Reset style bawaan html5-qrcode agar tidak merusak tampilan modern */
+        #reader {
+            border: none !important;
+        }
+        #reader video {
+            border-radius: 1.25rem !important;
+            object-fit: cover !important;
+            width: 100% !important;
+            height: auto !important;
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen pb-16 bg-[#fafbfc]">
@@ -159,12 +170,12 @@
                 </button>
             </div>
             
-            <div class="relative rounded-2xl overflow-hidden aspect-video bg-black border border-slate-800">
-                <div id="reader" class="w-full h-full"></div>
+            <!-- FIX: Dihapus pembatas aspect-ratio keras & overflow agar video merender penuh di layar HP -->
+            <div class="relative rounded-2xl bg-black border border-slate-800 p-0.5">
+                <div id="reader" class="w-full"></div>
                 <!-- Laser Overlay -->
                 <div id="laser-effect" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10 hidden">
                     <div class="scanner-laser"></div>
-                    <div class="absolute inset-0 border-[24px] border-black/50"></div>
                 </div>
             </div>
             <p class="text-[11px] text-slate-500 text-center mt-2.5">Arahkan kamera ke bagian barcode produk secara fokus</p>
@@ -442,7 +453,7 @@
                                 <span class="text-base font-extrabold text-[#ff4fa3]">Rp ${rupiah(item.ecer)}</span>
                             </div>
 
-                            <!-- Member Grosir -->
+                            <!-- Member Grossir -->
                             <div class="flex items-center justify-between p-3.5 bg-indigo-50/40 rounded-2xl border border-indigo-100/30">
                                 <span class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-indigo-550"></span>
@@ -476,13 +487,21 @@
             document.getElementById("reader").innerHTML = "";
 
             qr = new Html5Qrcode("reader");
+            
+            // FIX: Tambahkan videoConstraints untuk resolusi HD penuh & set aspect ratio ideal agar kamera HP sangat tajam
             qr.start(
                 { facingMode: "environment" },
                 { 
-                    fps: 20, 
+                    fps: 30, // Mengurangi lagging video
                     qrbox: (width, height) => {
                         const size = Math.min(width, height) * 0.75;
                         return { width: size, height: size * 0.6 };
+                    },
+                    aspectRatio: 1.333334, // Rasio 4:3 standar kamera belakang handphone
+                    videoConstraints: {
+                        facingMode: "environment",
+                        width: { min: 640, ideal: 1280, max: 1920 }, // Memaksa resolusi HD agar teks barcode terbaca tajam
+                        height: { min: 480, ideal: 720, max: 1080 }
                     }
                 },
                 (decoded) => {
