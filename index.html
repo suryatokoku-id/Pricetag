@@ -1,266 +1,539 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cek Harga Produk Suryatokoku</title>
-<script src="https://unpkg.com/html5-qrcode"></script>
-<style>
-:root{--primary:#ff4fa3;--bg:#f5f5f5;}
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:var(--bg)}
-.container{max-width:700px;margin:auto;padding:15px}
-.header{
-  background:white;
-  color:var(--primary);
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
-.card{background:#fff;padding:15px;border-radius:12px;margin-top:15px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-input{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin-top:5px}
-.row{display:flex;gap:10px;margin-top:10px}
-button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
-.scan{background:#444;color:#fff}
-.cari,.request{background:var(--primary);color:#fff}
-.price{font-size:22px;font-weight:bold;color:var(--primary)}
-.pricebox{background:#fafafa;padding:10px;border-radius:8px;margin-top:8px}
-.success{background:#d4edda;padding:10px;border-radius:8px;margin-top:10px}
- .menu-button{
-  display:block;
-  width:100%;
-  background:var(--primary);
-  color:white;
-  text-align:center;
-  padding:15px;
-  border-radius:12px;
-  text-decoration:none;
-  font-weight:bold;
-  margin-top:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Harga Produk Suryatokoku</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html5-qrcode -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        /* Scanner neon pulse line */
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+        .scanner-laser {
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(to right, transparent, #22c55e, transparent);
+            animation: scan 2s linear infinite;
+            box-shadow: 0 0 8px #22c55e;
+        }
+    </style>
 </head>
-<body>
-<div class="container">
-<div class="header">
-<h2>CEK HARGA PRODUK</h2>
-</div>
-
-<a
-href="request.html"
-class="menu-button">
-
-PERMINTAAN PRICE TAG
-
-</a>
-
-<div class="card">
-
-<label style="margin-top:10px;display:block">Barcode / Nama Produk</label>
-<input id="keyword" placeholder="Scan barcode atau ketik nama produk">
-
-<div class="row">
-<button class="scan" onclick="startScanner()">SCAN</button>
-</div>
-</div>
-
-<div id="reader"></div>
-<div id="hasil"></div>
-
-</div>
-
-<script>
-const API_URL="https://script.google.com/macros/s/AKfycbw0g2jFI8AD3UfthUcqubE7wCaOdPhyeuJ1tt5J-rrlODUKy2hplh_3vVnxfI3Jtt3p/exec";
-let currentProducts=[];
-let currentProduct=null;
-let allProducts=[];
-let qr = null;
- 
-document
-.getElementById("keyword")
-.addEventListener("input",cariProduk);
- 
-window.onload = loadData;
-
-function cariProduk(){
-
- const keyword=
- document.getElementById("keyword")
- .value
- .trim()
- .toLowerCase();
-
- if(!keyword){
-
- document.getElementById("hasil").innerHTML="";
- return;
-
-}
-
- currentProducts=
- allProducts.filter(item=>
-
-  String(item.barcode||"")
-  .toLowerCase()
-  .includes(keyword)
-
-  ||
-
-  String(item.kode||"")
-  .toLowerCase()
-  .includes(keyword)
-
-  ||
-
-  String(item.nama||"")
-  .toLowerCase()
-  .includes(keyword)
-
- );
-
- tampilkanProduk();
-
-}
-
-function tampilkanProduk(){
-
- const hasil=document.getElementById("hasil");
-
- if(currentProducts.length===0){
-
-  hasil.innerHTML=
-  "<div class='card'>Produk tidak ditemukan</div>";
-
-  return;
- }
-
- let html="";
-
- currentProducts
- .slice(0,20)
- .forEach(item=>{
-
- html+=`
-
- <div class="card">
-
- <h3>${item.nama}</h3>
-
- <p>
- Kode Item :
- <b>${item.kode}</b>
- </p>
-
- <div class="pricebox">
- Non Member
- <div class="price">
- Rp ${rupiah(item.non)}
- </div>
- </div>
-
- <div class="pricebox">
- Member Ecer
- <div class="price">
- Rp ${rupiah(item.ecer)}
- </div>
- </div>
-
- <div class="pricebox">
- Member Grosir
- <div class="price">
- Rp ${rupiah(item.grosir)}
- </div>
- </div>
-
- </div>
-
- `;
-
- });
-
- hasil.innerHTML=html;
-
-}
-
-
-function rupiah(x){
- return Number(x||0).toLocaleString("id-ID");
-}
-
-async function loadData(){
-
- hasil.innerHTML =
- "<div class='card'>⏳ Memuat data produk...</div>";
-
- try{
-
-  const res =
-  await fetch(
-   API_URL + "?action=load"
-  );
-
-  const json =
-  await res.json();
-
-  allProducts =
-  json.data || [];
-
-  hasil.innerHTML =
-  `<div class='card'>
-   ✅ ${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat
-  </div>`;
-
-  setTimeout(()=>{
-   hasil.innerHTML="";
-  },1500);
-
- }catch(err){
-
-  console.error(err);
-
-  hasil.innerHTML =
-  "<div class='card'>❌ " + err + "</div>";
-
- }
-
-}
-
- 
-function startScanner(){
-
- if(qr){
-  return;
- }
-
- document.getElementById("reader").innerHTML="";
-
- qr =
- new Html5Qrcode("reader");
-
- qr.start(
-  {facingMode:"environment"},
-  {fps:10,qrbox:250},
-  (decoded)=>{
-
-   document.getElementById("keyword").value =
-   decoded;
-
-   qr.stop().then(()=>{
-
-    qr = null;
-
-    document.getElementById("reader").innerHTML="";
-
-    cariProduk();
-
-   });
-
-  }
- );
-
-}
-</script>
+<body class="text-slate-800 min-h-screen pb-12">
+
+    <!-- FULL SCREEN SPLASH LOADING SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 bg-gradient-to-tr from-[#ff4fa3] to-[#e03a89] z-50 flex flex-col items-center justify-center transition-all duration-500 ease-in-out">
+        <div class="relative flex flex-col items-center text-center px-6">
+            <!-- Ripple Wave Effect -->
+            <div class="absolute w-32 h-32 bg-white/10 rounded-full animate-ping"></div>
+            
+            <!-- Floating Store Icon Wrapper -->
+            <div class="relative bg-white text-[#ff4fa3] p-6 rounded-[2rem] shadow-2xl mb-6 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </div>
+            
+            <!-- Brand & Status Loading Text -->
+            <h2 class="text-white text-3xl font-black tracking-wider mb-2 drop-shadow-sm">SURYATOKOKU</h2>
+            <p id="splash-status" class="text-pink-100 text-xs font-semibold tracking-widest uppercase mb-6">Menghubungkan ke Database...</p>
+            
+            <!-- Modern Dot Spinner -->
+            <div class="flex gap-2 justify-center items-center">
+                <span class="w-3 h-3 rounded-full bg-white/40 animate-bounce" style="animation-delay: 0.1s"></span>
+                <span class="w-3 h-3 rounded-full bg-white/70 animate-bounce" style="animation-delay: 0.2s"></span>
+                <span class="w-3 h-3 rounded-full bg-white animate-bounce" style="animation-delay: 0.3s"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto px-4 pt-6">
+        <!-- HEADER BRAND -->
+        <header class="bg-gradient-to-r from-[#ff4fa3] to-[#e03a89] rounded-2xl p-6 text-white shadow-lg shadow-pink-500/20 mb-4 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+            <div class="absolute -left-5 -top-5 w-24 h-24 bg-pink-400/20 rounded-full blur-lg"></div>
+            
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-md mb-3">
+                    <!-- Shop Icon SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+                <h1 class="text-xs font-bold uppercase tracking-widest text-pink-100 mb-1">Portal Cek Harga</h1>
+                <h2 class="text-2xl font-black tracking-tight">SURYATOKOKU</h2>
+                
+                <!-- Status Badge -->
+                <div id="db-status" class="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-black/20 rounded-full text-xs font-semibold backdrop-blur-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Menghubungkan ke database...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION / ACTION BUTTON -->
+        <div class="mb-5">
+            <a href="request.html" class="flex items-center justify-between p-4 bg-white hover:bg-pink-50/50 border border-slate-100 rounded-xl shadow-sm transition-all duration-200 group">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-pink-100 text-[#ff4fa3] rounded-lg">
+                        <!-- Tag Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M6 20a1 1 0 001-1v-4.586a1 1 0 01.293-.707l7-7a1 1 0 00-1.414-1.414l-7 7a1 1 0 00-.293.707V19a1 1 0 001 1z" />
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold text-slate-800 text-sm">Permintaan Price Tag</p>
+                        <p class="text-xs text-slate-400">Ajukan pencetakan label harga rak baru</p>
+                    </div>
+                </div>
+                <!-- Arrow Right Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover:text-[#ff4fa3] group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- SEARCH CONTAINER -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-4">
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pencarian Produk</label>
+            <div class="relative">
+                <input id="keyword" type="text" placeholder="Ketik nama produk, kode atau scan..." 
+                    class="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ff4fa3] focus:bg-white text-sm transition-all placeholder-slate-400 font-medium">
+                
+                <!-- Search Icon Left -->
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+
+                <!-- Clear Button Right -->
+                <button id="clear-btn" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scanner Button Primary -->
+            <button onclick="startScanner()" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all">
+                <!-- Barcode Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+                <span>BUKA SCANNER BARCODE</span>
+            </button>
+        </div>
+
+        <!-- CAMERA SCANNER VIEWPORT MODAL-LIKE -->
+        <div id="scanner-wrapper" class="hidden bg-slate-950 rounded-2xl p-4 mb-4 relative overflow-hidden border border-slate-800 shadow-inner">
+            <div class="flex items-center justify-between mb-3 text-white">
+                <span class="text-xs font-semibold tracking-wider text-green-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                    Kamera Aktif
+                </span>
+                <button onclick="stopScanner()" class="text-xs bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white px-2.5 py-1 rounded-lg font-bold transition-all">
+                    Tutup
+                </button>
+            </div>
+            
+            <div class="relative rounded-xl overflow-hidden aspect-video bg-black border border-slate-800">
+                <div id="reader" class="w-full h-full"></div>
+                <!-- Laser Overlay -->
+                <div id="laser-effect" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10 hidden">
+                    <div class="scanner-laser"></div>
+                    <div class="absolute inset-0 border-[30px] border-black/40"></div>
+                </div>
+            </div>
+            <p class="text-[11px] text-slate-400 text-center mt-2.5">Arahkan kamera pada barcode produk dengan jelas</p>
+        </div>
+
+        <!-- RESULTS LIST -->
+        <main id="hasil" class="space-y-4"></main>
+    </div>
+
+    <!-- NOTIFICATION TOAST TEMPLATE -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-full shadow-xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none"></div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbw0g2jFI8AD3UfthUcqubE7wCaOdPhyeuJ1tt5J-rrlODUKy2hplh_3vVnxfI3Jtt3p/exec";
+        let currentProducts = [];
+        let allProducts = [];
+        let qr = null;
+
+        // INDEXEDDB CONFIGURATION FOR INSTANT LOADING
+        const DB_NAME = "SuryatokokuLocalDB";
+        const STORE_NAME = "product_cache";
+
+        const keywordInput = document.getElementById("keyword");
+        const clearBtn = document.getElementById("clear-btn");
+        const hasilDiv = document.getElementById("hasil");
+        const dbStatus = document.getElementById("db-status");
+        const splashScreen = document.getElementById("splash-screen");
+        const splashStatus = document.getElementById("splash-status");
+
+        keywordInput.addEventListener("input", () => {
+            if (keywordInput.value.length > 0) {
+                clearBtn.classList.remove("hidden");
+            } else {
+                clearBtn.classList.add("hidden");
+            }
+            cariProduk();
+        });
+
+        clearBtn.addEventListener("click", () => {
+            keywordInput.value = "";
+            clearBtn.classList.add("hidden");
+            cariProduk();
+            keywordInput.focus();
+        });
+
+        window.onload = loadData;
+
+        // Custom Notification Toast
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById("toast");
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            toast.classList.remove("translate-y-20", "opacity-0");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            setTimeout(() => {
+                toast.classList.add("translate-y-20", "opacity-0");
+                toast.classList.remove("translate-y-0", "opacity-100");
+            }, 3000);
+        }
+
+        // --- INDEXEDDB HELPER FUNCTIONS ---
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function getCachedProducts() {
+            try {
+                const db = await initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, "readonly");
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.get("all_products");
+                    request.onsuccess = () => resolve(request.result || null);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (e) {
+                console.error("Gagal memuat cache lokal:", e);
+                return null;
+            }
+        }
+
+        async function saveProductsToCache(data) {
+            try {
+                const db = await initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(STORE_NAME, "readwrite");
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.put(data, "all_products");
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (e) {
+                console.error("Gagal menyimpan cache baru:", e);
+            }
+        }
+
+        // --- MAIN DATA LOADING LOGIC (STALE-WHILE-REVALIDATE) ---
+        async function loadData() {
+            try {
+                splashStatus.innerText = "Mengecek data lokal...";
+                
+                // 1. Ambil data dari penyimpanan lokal (IndexedDB)
+                const cachedData = await getCachedProducts();
+
+                if (cachedData && cachedData.length > 0) {
+                    // JIKA ADA CACHE: Langsung masukkan data dan hilangkan loading screen INSTAN
+                    allProducts = cachedData;
+                    
+                    dbStatus.innerHTML = `
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
+                        <span>Lokal: ${allProducts.length.toLocaleString("id-ID")} Produk (Menyelaraskan...)</span>
+                    `;
+                    dbStatus.className = "mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-300 rounded-full text-xs font-semibold backdrop-blur-sm";
+
+                    // Hilangkan splash screen seketika
+                    splashScreen.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        splashScreen.classList.add("hidden");
+                    }, 500);
+
+                    // Jalankan sinkronisasi latar belakang tanpa mengganggu pencarian
+                    fetchFreshData(true);
+                } else {
+                    // JIKA TIDAK ADA CACHE (Pertama kali buka): Tampilkan loading screen penuh
+                    splashStatus.innerText = "Mengunduh database pertama kali (Mohon Tunggu...)";
+                    await fetchFreshData(false);
+                }
+            } catch (err) {
+                console.error(err);
+                await fetchFreshData(false);
+            }
+        }
+
+        // Fungsi mengunduh data asli dari Google Apps Script
+        async function fetchFreshData(isBackground = false) {
+            try {
+                const res = await fetch(API_URL + "?action=load");
+                const json = await res.json();
+                const freshProducts = json.data || [];
+
+                if (freshProducts.length > 0) {
+                    allProducts = freshProducts;
+                    // Simpan data terbaru ke IndexedDB agar pembukaan selanjutnya instan
+                    await saveProductsToCache(freshProducts);
+                }
+
+                // Update badge status utama ke Hijau (Aktif & Paling Baru)
+                dbStatus.innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span>Database Aktif: ${allProducts.length.toLocaleString("id-ID")} Produk</span>
+                `;
+                dbStatus.className = "mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-300 rounded-full text-xs font-semibold backdrop-blur-sm";
+
+                if (!isBackground) {
+                    // Jika pembukaan pertama kali, hilangkan splash screen setelah sukses unduh
+                    splashScreen.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        splashScreen.classList.add("hidden");
+                    }, 500);
+                    showToast(`${allProducts.length.toLocaleString("id-ID")} produk berhasil dimuat`, 'success');
+                } else {
+                    // Jika sinkronisasi di latar belakang berhasil
+                    showToast("Database diperbarui otomatis di latar belakang!", "success");
+                }
+            } catch (err) {
+                console.error("Gagal sinkronisasi data online:", err);
+                
+                if (!isBackground) {
+                    // Jika gagal total saat pembukaan pertama dan tidak punya data cadangan
+                    dbStatus.innerHTML = `
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        <span>Database Gagal Terhubung</span>
+                    `;
+                    dbStatus.className = "mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 text-rose-300 rounded-full text-xs font-semibold backdrop-blur-sm";
+
+                    splashScreen.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        splashScreen.classList.add("hidden");
+                    }, 500);
+
+                    hasilDiv.innerHTML = `
+                        <div class="bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl p-5 text-center shadow-sm">
+                            <div class="font-bold text-sm mb-1">Gagal Sinkronisasi Pertama</div>
+                            <p class="text-xs text-rose-600">Pastikan koneksi internet stabil lalu ketuk coba lagi.</p>
+                            <button onclick="location.reload()" class="mt-3 px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-sm">Coba Lagi</button>
+                        </div>
+                    `;
+                    showToast("Gagal memuat database produk", "error");
+                } else {
+                    // Jika background sync gagal tapi ada cache, tidak masalah gunakan data lokal yang ada
+                    dbStatus.innerHTML = `
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span>Lokal: ${allProducts.length.toLocaleString("id-ID")} Produk (Offline)</span>
+                    `;
+                    dbStatus.className = "mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-300 rounded-full text-xs font-semibold backdrop-blur-sm";
+                    showToast("Koneksi tidak stabil, menggunakan data lokal", "info");
+                }
+            }
+        }
+
+        function cariProduk() {
+            const keyword = keywordInput.value.trim().toLowerCase();
+
+            if (!keyword) {
+                hasilDiv.innerHTML = "";
+                return;
+            }
+
+            currentProducts = allProducts.filter(item => 
+                String(item.barcode || "").toLowerCase().includes(keyword) ||
+                String(item.kode || "").toLowerCase().includes(keyword) ||
+                String(item.nama || "").toLowerCase().includes(keyword)
+            );
+
+            tampilkanProduk();
+        }
+
+        function tampilkanProduk() {
+            if (currentProducts.length === 0) {
+                hasilDiv.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center border border-slate-150 shadow-sm">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm">Produk Tidak Ditemukan</h3>
+                        <p class="text-xs text-slate-400 mt-1">Coba gunakan nama produk lain atau pastikan barcode sudah sesuai.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            currentProducts.slice(0, 20).forEach(item => {
+                html += `
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="mb-3">
+                            <span class="inline-block text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full mb-1.5">
+                                Kode: ${item.kode || '-'}
+                            </span>
+                            <h3 class="font-bold text-slate-800 text-base leading-tight">${item.nama}</h3>
+                            ${item.barcode ? `
+                                <div class="mt-2 flex items-center gap-1.5 text-slate-400 text-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M6 20a1 1 0 001-1v-4.586a1 1 0 01.293-.707l7-7a1 1 0 00-1.414-1.414l-7 7a1 1 0 00-.293.707V19a1 1 0 001 1z" />
+                                    </svg>
+                                    <span>Barcode: <strong class="font-semibold text-slate-500">${item.barcode}</strong></span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Price Section -->
+                        <div class="grid grid-cols-1 gap-2.5 mt-4">
+                            <!-- Non Member -->
+                            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200/50 rounded-xl">
+                                <span class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    Non Member
+                                </span>
+                                <span class="text-base font-extrabold text-slate-800">Rp ${rupiah(item.non)}</span>
+                            </div>
+
+                            <!-- Member Ecer -->
+                            <div class="flex items-center justify-between p-3 bg-pink-50/50 border border-pink-100 rounded-xl">
+                                <span class="text-xs font-bold text-pink-600 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#ff4fa3]"></span>
+                                    Member Ecer
+                                </span>
+                                <span class="text-base font-extrabold text-[#ff4fa3]">Rp ${rupiah(item.ecer)}</span>
+                            </div>
+
+                            <!-- Member Grosir -->
+                            <div class="flex items-center justify-between p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl">
+                                <span class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                    Member Grosir
+                                </span>
+                                <span class="text-base font-extrabold text-indigo-700">Rp ${rupiah(item.grosir)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            hasilDiv.innerHTML = html;
+        }
+
+        function rupiah(x) {
+            return Number(x || 0).toLocaleString("id-ID");
+        }
+
+        function startScanner() {
+            if (qr) {
+                stopScanner();
+                return;
+            }
+
+            const wrapper = document.getElementById("scanner-wrapper");
+            const laser = document.getElementById("laser-effect");
+            
+            wrapper.classList.remove("hidden");
+            laser.classList.remove("hidden");
+            document.getElementById("reader").innerHTML = "";
+
+            qr = new Html5Qrcode("reader");
+            qr.start(
+                { facingMode: "environment" },
+                { 
+                    fps: 15, 
+                    qrbox: (width, height) => {
+                        const size = Math.min(width, height) * 0.7;
+                        return { width: size, height: size * 0.6 };
+                    }
+                },
+                (decoded) => {
+                    keywordInput.value = decoded;
+                    clearBtn.classList.remove("hidden");
+                    
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100);
+                    }
+
+                    stopScanner();
+                    cariProduk();
+                    showToast("Barcode terdeteksi!", "success");
+                },
+                (error) => {}
+            ).catch(err => {
+                console.error("Camera Access Failed:", err);
+                showToast("Akses kamera ditolak / tidak ditemukan", "error");
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            if (qr) {
+                qr.stop().then(() => {
+                    qr = null;
+                    document.getElementById("scanner-wrapper").classList.add("hidden");
+                    document.getElementById("laser-effect").classList.add("hidden");
+                    document.getElementById("reader").innerHTML = "";
+                }).catch(err => {
+                    console.error("Failed to stop scanner", err);
+                    qr = null;
+                    document.getElementById("scanner-wrapper").classList.add("hidden");
+                    document.getElementById("laser-effect").classList.add("hidden");
+                    document.getElementById("reader").innerHTML = "";
+                });
+            } else {
+                document.getElementById("scanner-wrapper").classList.add("hidden");
+                document.getElementById("laser-effect").classList.add("hidden");
+            }
+        }
+    </script>
 </body>
 </html>
