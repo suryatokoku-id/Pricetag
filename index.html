@@ -52,6 +52,29 @@
             height: auto !important;
         }
     </style>
+    <script>
+        // Fungsi aman untuk menangani error pemuatan gambar tanpa merusak atribut HTML
+        function handleLogoError(img, type) {
+            img.onerror = null; // Menghindari loop tak terbatas jika SVG pun bermasalah
+            if (type === 'splash') {
+                img.outerHTML = `
+                    <div class="bg-gradient-to-tr from-[#ff4fa3] to-[#d93a83] text-white p-6 rounded-3xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                `;
+            } else if (type === 'header') {
+                img.outerHTML = `
+                    <div class="bg-white/15 p-2.5 rounded-2xl backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                `;
+            }
+        }
+    </script>
 </head>
 <body class="text-slate-800 min-h-screen pb-16 bg-[#fafbfc]">
 
@@ -61,11 +84,9 @@
             <!-- Pulsing Elegant Ring -->
             <div class="absolute w-36 h-36 bg-pink-100/60 rounded-full animate-ping"></div>
             
-            <!-- Modern Store Icon Container -->
-            <div class="relative bg-gradient-to-tr from-[#ff4fa3] to-[#d93a83] text-white p-6 rounded-3xl shadow-xl shadow-pink-500/20 mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
+            <!-- Modern Store Logo Container (Menggunakan Gambar Logo Surtok 3D) -->
+            <div class="relative bg-white p-3 rounded-3xl shadow-xl shadow-pink-500/10 mb-6 border border-slate-100">
+                <img src="Logo%20Surtok%203D.png" alt="Suryatokoku Logo" class="h-20 w-20 object-contain" onerror="handleLogoError(this, 'splash')">
             </div>
             
             <!-- Brand & Status Loading Text -->
@@ -88,10 +109,8 @@
             <div class="absolute -left-6 -top-6 w-24 h-24 bg-pink-300/20 rounded-full blur-lg"></div>
             
             <div class="relative z-10 flex flex-col items-center text-center">
-                <div class="bg-white/15 p-2.5 rounded-2xl backdrop-blur-md mb-3 border border-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
+                <div class="bg-white p-1 rounded-2xl mb-3 shadow-md border border-white/10">
+                    <img src="Logo%20Surtok%203D.png" alt="Suryatokoku Logo" class="h-12 w-12 object-contain" onerror="handleLogoError(this, 'header')">
                 </div>
                 
                 <h1 class="text-[10px] font-bold uppercase tracking-wider text-pink-100 mb-0.5">Sistem Cek Harga</h1>
