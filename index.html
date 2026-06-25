@@ -105,34 +105,11 @@
             </div>
         </header>
 
-        <!-- NAVIGATION / ACTION BUTTON -->
-        <div class="mb-5">
-            <a href="request.html" class="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="flex items-center gap-3.5">
-                    <div class="p-2.5 bg-pink-50 text-[#ff4fa3] rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M6 20a1 1 0 001-1v-4.586a1 1 0 01.293-.707l7-7a1 1 0 00-1.414-1.414l-7 7a1 1 0 00-.293.707V19a1 1 0 001 1z" />
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <p class="font-bold text-slate-850 text-sm">Permintaan Price Tag</p>
-                        <p class="text-xs text-slate-400">Ajukan pencetakan label harga rak baru</p>
-                    </div>
-                </div>
-                <div class="p-1.5 bg-slate-50 rounded-lg group-hover:bg-pink-100 group-hover:text-[#ff4fa3] text-slate-400 transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                    </svg>
-                </div>
-            </a>
-        </div>
-
         <!-- SEARCH CONTAINER -->
         <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 mb-5">
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Pencarian Produk</label>
             <div class="relative">
                 <input id="keyword" type="text" placeholder="Masukkan nama produk, kode atau scan..." 
-                    class="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-pink-500/10 focus:border-[#ff4fa3] focus:bg-white text-sm font-medium transition-all placeholder-slate-400">
+                    class="w-full pl-11 pr-24 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-pink-500/10 focus:border-[#ff4fa3] focus:bg-white text-sm font-medium transition-all placeholder-slate-400">
                 
                 <!-- Search Icon Left -->
                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -141,12 +118,21 @@
                     </svg>
                 </div>
 
-                <!-- Clear Button Right -->
-                <button id="clear-btn" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-450 hover:text-slate-700 hidden transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                    </svg>
-                </button>
+                <!-- Right Controls: Voice, Clear -->
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <!-- Clear Button -->
+                    <button id="clear-btn" class="text-slate-400 hover:text-slate-700 hidden p-1 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <!-- Voice Search Button -->
+                    <button id="voice-btn" onclick="startVoiceSearch()" class="text-[#ff4fa3] hover:bg-pink-50 p-1.5 rounded-lg transition-all" title="Cari dengan Suara">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Scanner Button Primary -->
@@ -178,11 +164,58 @@
                     <div class="scanner-laser"></div>
                 </div>
             </div>
-            <p class="text-[11px] text-slate-500 text-center mt-2.5">Arahkan kamera ke bagian barcode produk secara fokus</p>
+            <p class="text-[11px] text-slate-550 text-center mt-2.5">Arahkan kamera ke bagian barcode produk secara fokus</p>
         </div>
 
         <!-- RESULTS LIST -->
         <main id="hasil" class="space-y-4"></main>
+    </div>
+
+    <!-- AI ADVISOR MODAL SHEET -->
+    <div id="ai-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-md rounded-t-[2.5rem] p-6 shadow-2xl transition-transform duration-300 translate-y-full flex flex-col max-h-[85vh]">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 cursor-pointer" onclick="closeAiModal()"></div>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-pink-100 p-2.5 rounded-2xl text-[#ff4fa3]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 id="ai-modal-title" class="font-bold text-slate-900 text-base">Asisten Pintar Suryatokoku</h3>
+                    <p id="ai-modal-subtitle" class="text-xs text-slate-400">Analisis Strategi & Konten Promosi</p>
+                </div>
+            </div>
+
+            <!-- Selection Tab -->
+            <div class="flex bg-slate-100 p-1.5 rounded-2xl mb-4">
+                <button id="tab-analysis" onclick="switchAiTab('analysis')" class="flex-1 text-center py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm">
+                    ✨ Strategi & Analisis
+                </button>
+                <button id="tab-promo" onclick="switchAiTab('promo')" class="flex-1 text-center py-2 text-xs font-semibold rounded-xl transition-all text-slate-500">
+                    ✨ Buat Promosi
+                </button>
+            </div>
+
+            <!-- Modal Scrollable Content -->
+            <div class="flex-1 overflow-y-auto pr-1 text-sm text-slate-700 leading-relaxed" id="ai-modal-content">
+                <!-- Content injected dynamically -->
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                <button onclick="copyAiOutput()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    <span>Salin Hasil</span>
+                </button>
+                <button onclick="closeAiModal()" class="flex-1 bg-slate-900 hover:bg-slate-850 text-white font-bold text-xs py-3.5 rounded-2xl transition-all">
+                    Tutup
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- NOTIFICATION TOAST TEMPLATE -->
@@ -190,9 +223,15 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw0g2jFI8AD3UfthUcqubE7wCaOdPhyeuJ1tt5J-rrlODUKy2hplh_3vVnxfI3Jtt3p/exec";
+        // Gemini API Configuration (Default sandbox key is bound dynamically in execution environment)
+        const apiKey = "";
+        
         let currentProducts = [];
         let allProducts = [];
         let qr = null;
+        let selectedProductForAi = null;
+        let currentAiTab = "analysis";
+        let aiCache = {}; // Cache AI responses to avoid excessive API calls
 
         // INDEXEDDB CONFIGURATION FOR INSTANT LOADING
         const DB_NAME = "SuryatokokuLocalDB";
@@ -367,7 +406,7 @@
                         <div class="bg-rose-50 border border-rose-100 rounded-3xl p-6 text-center shadow-sm">
                             <div class="font-bold text-slate-900 text-sm mb-1">Gagal Sinkronisasi Pertama</div>
                             <p class="text-xs text-rose-600 mb-3">Pastikan koneksi internet stabil lalu ketuk muat ulang.</p>
-                            <button onclick="location.reload()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 text-white rounded-xl text-xs font-bold transition-all shadow-sm">Muat Ulang</button>
+                            <button onclick="location.reload()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 text-white rounded-xl text-xs font-bold transition-all shadow-sm">Muat Olang</button>
                         </div>
                     `;
                     showToast("Gagal memuat basis data online", "error");
@@ -415,13 +454,22 @@
             }
 
             let html = "";
-            currentProducts.slice(0, 20).forEach(item => {
+            currentProducts.slice(0, 20).forEach((item, index) => {
+                // Gunakan index unik berbasis nama/kode untuk menghindari crash rujukan
+                const itemRef = btoa(encodeURIComponent(item.kode || item.nama)).substring(0, 15);
                 html += `
                     <div class="bg-white rounded-3xl p-5.5 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
                         <div class="mb-4">
-                            <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg mb-2">
-                                KODE: ${item.kode || '-'}
-                            </span>
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg mb-2">
+                                    KODE: ${item.kode || '-'}
+                                </span>
+                                <!-- ✨ AI Assistant Button -->
+                                <button onclick="openAiConsultant('${itemRef}', '${item.nama.replace(/'/g, "\\'")}', ${item.non}, ${item.ecer}, ${item.grosir})" 
+                                    class="inline-flex items-center gap-1 text-[11px] font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 px-3 py-1.5 rounded-xl transition-all border border-pink-100/50 active:scale-95">
+                                    <span>✨ Konsultasi AI</span>
+                                </button>
+                            </div>
                             <h3 class="font-extrabold text-slate-900 text-base leading-tight">${item.nama}</h3>
                             ${item.barcode ? `
                                 <div class="mt-2.5 flex items-center gap-1.5 text-slate-400 text-xs font-medium">
@@ -473,6 +521,226 @@
             return Number(x || 0).toLocaleString("id-ID");
         }
 
+        // --- GEMINI API INTEGRATION & CALLS ---
+        async function callGemini(promptText) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: {
+                    parts: [{ text: "Anda adalah asisten AI kasir dan pakar manajemen retail terbaik untuk toko Suryatokoku. Berikan jawaban dalam bahasa Indonesia yang menarik, rapi dengan markdown, ramah, persuasif, terstruktur dengan poin-poin yang mudah dimengerti." }]
+                }
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const data = await response.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) return text;
+                    throw new Error("Struktur respon tidak valid.");
+                } catch (err) {
+                    console.error(`Percobaan ke-${i+1} gagal:`, err);
+                    if (i === 4) throw err;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Exponential backoff
+                }
+            }
+            throw new Error("Gagal terhubung dengan layanan AI setelah beberapa percobaan.");
+        }
+
+        // AI Feature: Open Modal and fetch/display AI Insight
+        async function openAiConsultant(ref, nama, non, ecer, grosir) {
+            selectedProductForAi = { ref, nama, non, ecer, grosir };
+            
+            const modal = document.getElementById("ai-modal");
+            const modalContent = document.getElementById("ai-modal-content");
+            
+            document.getElementById("ai-modal-title").innerText = nama;
+            document.getElementById("ai-modal-subtitle").innerText = `Struktur Harga: Non-Member Rp${rupiah(non)} | Ecer Rp${rupiah(ecer)} | Grosir Rp${rupiah(grosir)}`;
+
+            // Open Modal UI
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                modal.classList.remove("opacity-0");
+                modal.querySelector("div").classList.remove("translate-y-full");
+            }, 50);
+
+            // Fetch AI content based on active tab
+            await loadAiContent();
+        }
+
+        async function loadAiContent() {
+            if (!selectedProductForAi) return;
+            
+            const modalContent = document.getElementById("ai-modal-content");
+            const cacheKey = `${selectedProductForAi.ref}_${currentAiTab}`;
+
+            // Check Cache
+            if (aiCache[cacheKey]) {
+                modalContent.innerHTML = formatMarkdown(aiCache[cacheKey]);
+                return;
+            }
+
+            // Show Skeleton / Loading
+            modalContent.innerHTML = `
+                <div class="space-y-4 animate-pulse py-4">
+                    <div class="h-4 bg-slate-200 rounded w-2/3"></div>
+                    <div class="h-3 bg-slate-200 rounded w-full"></div>
+                    <div class="h-3 bg-slate-200 rounded w-5/6"></div>
+                    <div class="h-20 bg-pink-50 rounded-2xl w-full"></div>
+                    <div class="h-3 bg-slate-200 rounded w-4/5"></div>
+                </div>
+            `;
+
+            let prompt = "";
+            if (currentAiTab === "analysis") {
+                prompt = `Berikan analisis struktur harga retail untuk produk bernama "${selectedProductForAi.nama}". 
+                Berikut adalah skema harganya saat ini:
+                - Harga Non-Member (Umum): Rp${selectedProductForAi.non}
+                - Harga Member Ecer: Rp${selectedProductForAi.ecer}
+                - Harga Member Grosir: Rp${selectedProductForAi.grosir}
+                
+                Tolong berikan analisis singkat:
+                1. Analisis margin/disparitas harga antara Non-Member, Member Ecer, dan Grosir (hitung persentase diskon & daya tarik hematnya).
+                2. Strategi bundle atau promosi unik apa yang cocok agar pelanggan umum tertarik daftar menjadi member ecer atau grosir.
+                3. Saran strategi up-selling atau cross-selling untuk meningkatkan volume penjualan produk ini.`;
+            } else {
+                prompt = `Buatkan 3 opsi copywriting iklan/promosi kreatif dan persuasif siap pakai untuk produk "${selectedProductForAi.nama}" dengan harga khusus:
+                - Harga Normal (Non-Member): Rp${selectedProductForAi.non}
+                - Harga Spesial Member Ecer: Rp${selectedProductForAi.ecer}
+                - Harga Spesial Grosir: Rp${selectedProductForAi.grosir} (minimal pembelian grosir)
+                
+                Format iklan harus menyertakan:
+                - Opsi 1: Gaya santai untuk WhatsApp/Instagram story yang kaya emoji.
+                - Opsi 2: Gaya edukatif-hemat (fokus ke untungnya menjadi member).
+                - Opsi 3: Gaya mendesak/urgensi tinggi (Promo terbatas).
+                
+                Pastikan bahasa Indonesia bersahabat, asyik, dan membuat orang ingin buru-buru membeli atau bergabung menjadi member Suryatokoku.`;
+            }
+
+            try {
+                const responseText = await callGemini(prompt);
+                aiCache[cacheKey] = responseText;
+                modalContent.innerHTML = formatMarkdown(responseText);
+            } catch (error) {
+                console.error("AI Error:", error);
+                modalContent.innerHTML = `
+                    <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-xs text-center">
+                        <p class="font-bold mb-1">Gagal Menghubungi Asisten AI</p>
+                        <p class="mb-3">${error.message || "Pastikan Anda memiliki jaringan internet yang stabil."}</p>
+                        <button onclick="loadAiContent()" class="px-4 py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all">Coba Lagi</button>
+                    </div>
+                `;
+            }
+        }
+
+        function switchAiTab(tab) {
+            if (currentAiTab === tab) return;
+            currentAiTab = tab;
+
+            const tabAnalysisBtn = document.getElementById("tab-analysis");
+            const tabPromoBtn = document.getElementById("tab-promo");
+
+            if (tab === "analysis") {
+                tabAnalysisBtn.className = "flex-1 text-center py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm";
+                tabPromoBtn.className = "flex-1 text-center py-2 text-xs font-semibold rounded-xl transition-all text-slate-500";
+            } else {
+                tabPromoBtn.className = "flex-1 text-center py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm";
+                tabAnalysisBtn.className = "flex-1 text-center py-2 text-xs font-semibold rounded-xl transition-all text-slate-500";
+            }
+
+            loadAiContent();
+        }
+
+        function closeAiModal() {
+            const modal = document.getElementById("ai-modal");
+            modal.classList.add("opacity-0");
+            modal.querySelector("div").classList.add("translate-y-full");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+            }, 300);
+        }
+
+        function copyAiOutput() {
+            const contentDiv = document.getElementById("ai-modal-content");
+            // Ambil text murni dari elemen konten modal
+            const rawText = contentDiv.innerText;
+            
+            // Menggunakan command fallback karena keterbatasan iframe
+            const tempInput = document.createElement("textarea");
+            tempInput.value = rawText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            
+            showToast("Berhasil menyalin analisis ke papan klip!", "success");
+        }
+
+        // Helper untuk memformat Markdown basic ke HTML demi estetika visual AI Modal
+        function formatMarkdown(text) {
+            let html = text
+                .replace(/\n\n/g, '<p class="mb-3"></p>')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/### (.*?)(?:<br>|<p|$)/g, '<h4 class="font-bold text-slate-900 text-sm mt-4 mb-2 flex items-center gap-1.5 text-pink-600">$1</h4>')
+                .replace(/## (.*?)(?:<br>|<p|$)/g, '<h3 class="font-extrabold text-slate-900 text-base mt-5 mb-2 border-b pb-1">$1</h3>')
+                .replace(/- (.*?)(?:<br>|<p|$)/g, '<li class="ml-4 list-disc pl-1 mb-1">$1</li>');
+            
+            return `<div class="prose prose-sm max-w-none">${html}</div>`;
+        }
+
+        // --- FEATURE: AI VOICE SEARCH & RECOGNITION ---
+        function startVoiceSearch() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                showToast("Peramban Anda tidak mendukung penelusuran suara.", "error");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = "id-ID"; // Set Bahasa Indonesia
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const voiceBtn = document.getElementById("voice-btn");
+            voiceBtn.classList.add("animate-pulse", "bg-pink-100");
+            showToast("Mendengarkan... Silakan sebutkan nama produk", "info");
+
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                keywordInput.value = speechResult;
+                clearBtn.classList.remove("hidden");
+                cariProduk();
+                showToast(`Mencari untuk: "${speechResult}"`, "success");
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                voiceBtn.classList.remove("animate-pulse", "bg-pink-100");
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Voice recognition error:", event.error);
+                voiceBtn.classList.remove("animate-pulse", "bg-pink-100");
+                showToast("Gagal mendeteksi suara. Coba lagi.", "error");
+            };
+        }
+
+        // --- SCANNER LOGIC ---
         function startScanner() {
             if (qr) {
                 stopScanner();
